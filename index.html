@@ -617,7 +617,7 @@
 </div>
 
 <input type="file" id="fileInput" accept=".xlsx,.xls" hidden="" data-html2canvas-ignore="true">
-<div id="toast" data-html2canvas-ignore="true" class="show">HTML salvo com sucesso.</div>
+<div id="toast" data-html2canvas-ignore="true"></div>
 
 <script id="embedded-data" type="application/json">{
   "clientName": "Brustin Studio Ltda",
@@ -1229,6 +1229,9 @@
     var docClone = document.documentElement.cloneNode(true);
     var script = docClone.querySelector('#embedded-data');
     if (script) script.textContent = JSON.stringify(window.__DASHBOARD_DATA__ || state.data, null, 2);
+    // não persistir a mensagem de status: o arquivo salvo abre sem toast visível
+    var toastClone = docClone.querySelector('#toast');
+    if (toastClone){ toastClone.textContent = ''; toastClone.className = ''; }
     return '<!DOCTYPE html>\n' + docClone.outerHTML;
   }
 
@@ -1400,6 +1403,11 @@
   });
 
   // ---------- Boot ----------
+  // garante que nenhuma mensagem gravada em versões anteriores apareça ao abrir
+  (function(){
+    var t = document.getElementById('toast');
+    if (t){ t.textContent = ''; t.className = ''; }
+  })();
   var seed = JSON.parse(document.getElementById('embedded-data').textContent);
   render(seed);
 })();
